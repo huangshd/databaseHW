@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            height: 100vh;
+            margin: 0;
+            padding-top: 50px; /* 添加填充以向下移动内容 */
+        }
+        h1 {
+            margin-bottom: 20px;
+        }
+        .button-container {
+            display: flex;
+            gap: 10px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+            background-color: #5cb85c;
+            color: white;
+        }
+        button:hover {
+            background-color: #4cae4c;
+        }
+        .table-container {
+            margin-top: 20px;
+            width: 80%;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <h1>Welcome to the Admin Page</h1>
+    <div class="button-container">
+        <button onclick="loadTable('user')">用户表</button>
+        <button onclick="loadTable('merchant')">商家表</button>
+        <button onclick="loadTable('dish')">菜品表</button>
+        <button onclick="loadTable('review')">评价表</button>
+        <button onclick="loadTable('order')">订单表</button>
+    </div>
+    <div class="table-container" id="table-container"></div>  <!-- 添加一个容器用于显示表格 -->
+
+    <script>
+        function loadTable(tableName) {
+            fetch(`/${tableName}-table`)
+                .then(response => response.text())
+                .then(data => {
+                    document.getElementById('table-container').innerHTML = data;
+                })
+                .catch(error => console.error('Error loading table:', error));
+        }
+    </script>
+</body>
+</html>

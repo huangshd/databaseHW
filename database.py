@@ -19,7 +19,30 @@ def connect_to_database():
         pytest.fail(str(e))
         return None
 
+def validate_user(connection, user_name, password):
+    try:
+        cursor = connection.cursor()
 
+        # 查询数据库中是否有匹配的用户名和密码
+        query = f"SELECT * FROM users WHERE user_name = %s AND pass_word = %s;"
+        cursor.execute(query, (user_name, password))  # 使用参数化查询避免 SQL 注入
+
+        # 获取查询结果
+        user = cursor.fetchone()  # 返回的第一个匹配用户（如果有）
+
+        cursor.close()
+
+        # 判断是否找到了匹配的用户
+        if user:
+            print(f"User {user_name} validated successfully.")
+            return user[0]  # 用户验证成功
+        else:
+            print(f"Invalid credentials for user {user_name}.")
+            return False  # 用户验证失败
+
+    except Exception as e:
+        print(f"Error occurred while validating user {user_name}:", e)
+        return False
 
 def delete_table(connection, table_name):
     try:
@@ -256,6 +279,6 @@ if __name__ == "__main__":
 
         #insert_dish_data(connection,[('1','2024','shit',100,'smelly')])
         #insert_comment_data(connection,[('1','2004','2024','1','bad',1)])
-        insert_order_data(connection, [('1','2004','2024',499,'done')])
+        #insert_order_data(connection, [('1','2004','2024',499,'done')])
 
         connection.close()  # 关闭数据库连接

@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <style>
+        /* 设置 body 的样式 */
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background-image: url('login.jpg');
+            background-size: cover;
+            background-position: center;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        /* 设置登录容器的样式 */
+        .login-container {
+            background: rgba(255, 255, 255, 0.8);
+            padding: 20px 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            width: 300px;
+            text-align: center;
+        }
+        /* 设置登录容器内标题的样式 */
+        .login-container h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        /* 设置标签的样式 */
+        .login-container label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        /* 设置输入框的样式 */
+        .login-container input[type="text"],
+        .login-container input[type="password"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        /* 设置按钮的样式 */
+        .login-container button {
+            width: 100%;
+            padding: 10px;
+            background-color: #5cb85c;
+            border: none;
+            border-radius: 5px;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            margin-bottom: 10px;
+        }
+        /* 设置按钮悬停时的样式 */
+        .login-container button:hover {
+            background-color: #4cae4c;
+        }
+        /* 设置登录成功后的按钮容器样式 */
+        .success-buttons {
+            display: flex;
+            justify-content: space-between;
+        }
+        /* 设置登录成功后的按钮样式 */
+        .success-buttons button {
+            width: 48%;
+            padding: 10px;
+            background-color: #5cb85c;
+            border: none;
+            border-radius: 5px;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        /* 设置登录成功后的按钮悬停样式 */
+        .success-buttons button:hover {
+            background-color: #4cae4c;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <h2>Login</h2>
+        <form id="loginForm">
+            <label for="username">Username:</label>
+            <input type="text" id="username" name="username" required>
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" required>
+            <button type="submit">Login</button>
+        </form>
+    </div>
+
+    <script>
+        // 添加表单提交事件监听器
+        document.getElementById('loginForm').addEventListener('submit', async function(event) {
+            event.preventDefault();
+
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            // 发送登录请求
+            const response = await fetch('/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ username, password })
+            });
+
+            const result = await response.json();
+            // 根据响应结果显示提示信息
+            if (result.success) {
+                document.body.innerHTML = `
+                    <div class="login-container">
+                        <h1>登录成功！</h1>
+                        <div class="success-buttons">
+                            <button onclick="location.href='/user'">我是用户</button>
+                            <button onclick="location.href='/admin'">我是管理员</button>
+                        </div>
+                    </div>
+                `;
+            } else {
+                alert('账号或密码错误！');
+            }
+        });
+    </script>
+</body>
+</html>
