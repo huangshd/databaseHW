@@ -150,10 +150,16 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
 
         cursor = conn.cursor()
 
-        # 查询餐厅名称
-        cursor.execute("SELECT restrant_id, name FROM Restaurants")
+        # 查询餐厅名称和平均评分
+        cursor.execute("""
+            SELECT r.restrant_id, r.name, r.background_image_url, 
+                   AVG(c.rating) AS avg_rating 
+            FROM Restaurants r
+            LEFT JOIN Comments c ON r.restrant_id = c.rest_id
+            GROUP BY r.restrant_id, r.name, r.background_image_url
+        """)
 
-        # 生成餐厅名称的 HTML
+        # 生成餐厅名称和评分的 HTML
         html = ""
         image_index = 0  # 用来循环访问背景图片元组
 
@@ -161,9 +167,13 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
             # 获取背景图片 URL（循环使用背景图片元组中的图片）
             background_image_url = self.background_images[image_index]
 
+            # 获取餐厅的平均评分
+            avg_rating = row.avg_rating if row.avg_rating is not None else 0
+
             html += f'''
             <div class="restaurant-item" style="background-image: url('{background_image_url}')">
                 <h3>{row.name}</h3>
+                <p>Rating: {avg_rating:.1f}</p>
                 <a href="/restaurant/{row.restrant_id}">View Details</a>
             </div>
             '''

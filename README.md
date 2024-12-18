@@ -1,3 +1,28 @@
+12/18 18:52更新  
+实现了将评分显示到餐厅界面中的功能，主要的实现逻辑是在`get_restaurant_names`函数的
+````python
+cursor.execute("""
+            SELECT r.restrant_id, r.name, r.background_image_url, 
+                   AVG(c.rating) AS avg_rating 
+            FROM Restaurants r
+            LEFT JOIN Comments c ON r.restrant_id = c.rest_id
+            GROUP BY r.restrant_id, r.name, r.background_image_url
+        """)
+以及
+# 获取餐厅的平均评分
+            avg_rating = row.avg_rating if row.avg_rating is not None else 0
+````
+中实现。在索引搜索函数名就可以找到。在生成html的部分中加入了评分机制(下面代码的第4行)就可以了
+```python
+html += f'''
+            <div class="restaurant-item" style="background-image: url('{background_image_url}')">
+                <h3>{row.name}</h3>
+                <p>Rating: {avg_rating:.1f}</p>
+                <a href="/restaurant/{row.restrant_id}">View Details</a>
+            </div>
+            '''
+```
+
 12/18 18:01更新    
 实现了选中`user`界面后可以查看饭店的信息（根据迪哥给的E-R图做的，在这里要注意，我们还需要给饭店表添加一个属性用来存储背景图片的Url否则会无法贴上图片）  
 主要的关键函数有`login.py`中的`get_restaurant_names`，它连接数据库之后获取餐厅的名字和背景图片然后根据`user.html`中的模板生成超链接  

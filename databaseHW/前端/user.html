@@ -5,101 +5,70 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>User Page</title>
     <style>
-        /* 页面背景 */
         body {
-            background-image: url('https://img95.699pic.com/photo/60019/7893.jpg_wh860.jpg');
-            background-size: cover; /* 背景图覆盖整个页面 */
-            background-position: center;
+            font-family: Arial, sans-serif;
+            background-image: url('https://th.bing.com/th/id/OIP.xGTInVTOkiPa4bx7tQWxzwHaEn?rs=1&pid=ImgDetMain'); /* 设置背景图片 */
+            background-size: cover; /* 背景图片覆盖整个页面 */
+            background-position: center center; /* 背景图片居中 */
+            background-attachment: fixed; /* 背景固定 */
             margin: 0;
             padding: 0;
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
+            height: 100vh; /* 确保背景图片覆盖整个视口高度 */
         }
 
-        /* 页面容器 */
-        .container {
-            background-color: rgba(255, 255, 255, 0.8); /* 半透明的背景色 */
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
-            max-width: 100%;
-            width: 80%;
-            overflow-y: auto;  /* 允许滚动 */
-            max-height: 90vh;  /* 页面最大高度 */
-        }
-
-        /* 餐厅块布局 */
-        .restaurant-list {
-            display: flex;
-            flex-wrap: wrap; /* 允许换行 */
-            justify-content: space-around; /* 均匀分布 */
+        #restaurant-list {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr); /* 每行放2个块 */
+            gap: 30px; /* 中间的空隙 */
+            padding: 40px;
+            justify-items: center; /* 保证每个块在其容器内居中 */
         }
 
         .restaurant-item {
-            width: calc(25% - 20px); /* 每个块占据四分之一宽度（减去间距） */
-            margin: 10px;
-            padding: 10px;
-            background-color: rgba(255, 255, 255, 0.7);
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-            text-align: center;
+            position: relative;
             background-size: cover;
             background-position: center;
-            height: 200px;  /* 设置每个块的高度 */
+            padding: 20px;
+            width: 100%; /* 占据容器的宽度 */
+            max-width: 400px; /* 限制块的最大宽度 */
+            height: 250px;
+            color: white;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
             display: flex;
             flex-direction: column;
-            justify-content: flex-end; /* 靠下对齐内容 */
-            color: white;
-            font-weight: bold;
+            justify-content: flex-end;
         }
 
         .restaurant-item h3 {
-            font-size: 20px;
-            margin: 10px 0;
-            color: pink; /* 设置餐厅名称字体颜色为黑色 */
+            font-size: 24px;
+            margin: 0;
         }
 
-        .restaurant-item a {
-            text-decoration: none;
-            color: white;
-            font-size: 16px;
-            background-color: rgba(0, 123, 255, 0.8);
+        .restaurant-item .rating {
+            position: absolute;
+            top: 10px;
+            right: 20px;
+            background-color: rgba(0, 0, 0, 0.6);
             padding: 5px 10px;
             border-radius: 5px;
-            display: inline-block;
-            margin-top: 10px;
+            font-weight: bold;
         }
 
-        .restaurant-item a:hover {
-            background-color: rgba(0, 123, 255, 1);
-        }
-
-        .back-link {
-            display: block;
-            text-align: center;
-            margin-top: 20px;
-            font-size: 18px;
+        a {
             color: #007BFF;
             text-decoration: none;
         }
 
-        .back-link:hover {
+        a:hover {
             text-decoration: underline;
         }
+
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Restaurant List</h1>
-        <!-- 餐厅名称列表，使用 {{restaurant_names}} 动态填充 -->
-        <div class="restaurant-list">
-            {{restaurant_names}}
-        </div>
-
-        <a href="/admin" class="back-link">Back to Admin Page</a>
+    <div id="restaurant-list">
+        {{restaurant_names}}
     </div>
 </body>
 </html>
