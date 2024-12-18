@@ -5,47 +5,101 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>User Page</title>
     <style>
+        /* 页面背景 */
         body {
-            font-family: Arial, sans-serif;
+            background-image: url('https://img95.699pic.com/photo/60019/7893.jpg_wh860.jpg');
+            background-size: cover; /* 背景图覆盖整个页面 */
+            background-position: center;
             margin: 0;
             padding: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        /* 页面容器 */
+        .container {
+            background-color: rgba(255, 255, 255, 0.8); /* 半透明的背景色 */
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+            max-width: 100%;
+            width: 80%;
+            overflow-y: auto;  /* 允许滚动 */
+            max-height: 90vh;  /* 页面最大高度 */
+        }
+
+        /* 餐厅块布局 */
+        .restaurant-list {
+            display: flex;
+            flex-wrap: wrap; /* 允许换行 */
+            justify-content: space-around; /* 均匀分布 */
+        }
+
+        .restaurant-item {
+            width: calc(25% - 20px); /* 每个块占据四分之一宽度（减去间距） */
+            margin: 10px;
+            padding: 10px;
+            background-color: rgba(255, 255, 255, 0.7);
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            background-size: cover;
+            background-position: center;
+            height: 200px;  /* 设置每个块的高度 */
             display: flex;
             flex-direction: column;
-            align-items: center;
-        }
-        .welcome-message {
-            margin-top: 20px;
-            font-size: 24px;
+            justify-content: flex-end; /* 靠下对齐内容 */
+            color: white;
             font-weight: bold;
-            text-align: center;
         }
-        .restaurant-list {
-            margin-top: 20px;
+
+        .restaurant-item h3 {
             font-size: 20px;
-            list-style-type: none;
-            padding: 0;
-        }
-        .restaurant-list li {
             margin: 10px 0;
+            color: pink; /* 设置餐厅名称字体颜色为黑色 */
+        }
+
+        .restaurant-item a {
+            text-decoration: none;
+            color: white;
+            font-size: 16px;
+            background-color: rgba(0, 123, 255, 0.8);
+            padding: 5px 10px;
+            border-radius: 5px;
+            display: inline-block;
+            margin-top: 10px;
+        }
+
+        .restaurant-item a:hover {
+            background-color: rgba(0, 123, 255, 1);
+        }
+
+        .back-link {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            font-size: 18px;
+            color: #007BFF;
+            text-decoration: none;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
         }
     </style>
 </head>
 <body>
-    <div class="welcome-message" id="welcomeMessage">欢迎，用户！</div>
-    <h1>Welcome to the User Page</h1>
+    <div class="container">
+        <h1>Restaurant List</h1>
+        <!-- 餐厅名称列表，使用 {{restaurant_names}} 动态填充 -->
+        <div class="restaurant-list">
+            {{restaurant_names}}
+        </div>
 
-    <h2>餐厅列表</h2>
-    <div class="restaurant-list">
-        <!-- 餐厅名称将在这里动态插入 -->
-        {{restaurant_names}}
+        <a href="/admin" class="back-link">Back to Admin Page</a>
     </div>
-
-    <script>
-        const params = new URLSearchParams(window.location.search);
-        const username = params.get('username');
-        if (username) {
-            document.getElementById('welcomeMessage').textContent = `欢迎，${username}！`;
-        }
-    </script>
 </body>
 </html>

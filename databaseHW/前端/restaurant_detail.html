@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{restaurant_name}} Details</title>
+    <style>
+        /* 设置页面的整体布局 */
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            font-family: Arial, sans-serif; /* 设置字体 */
+            color: white; /* 设置默认字体颜色 */
+        }
+
+        /* 背景图片的容器 */
+        .flex-container {
+            display: flex;
+            justify-content: center;  /* 水平居中 */
+            align-items: center;      /* 垂直居中 */
+            height: 100vh;            /* 使容器占满整个视口 */
+            background-image: url('{{background_image_url}}');
+            background-size: cover;  /* 背景图片覆盖整个容器 */
+            background-position: center; /* 背景图片居中 */
+        }
+
+        /* 文字内容的容器 */
+        .container {
+            background-color: rgba(0, 0, 0, 0.6); /* 半透明黑色背景 */
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+            text-align: center; /* 使文字居中 */
+            max-width: 600px;  /* 最大宽度 */
+            width: 100%;
+        }
+
+        h1 {
+            font-size: 36px;
+            margin-bottom: 20px;
+        }
+
+        p {
+            font-size: 18px;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .back-link {
+            display: inline-block;
+            text-align: center;
+            margin-top: 30px;
+            font-size: 18px;
+            color: #007BFF;
+            text-decoration: none;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="flex-container">
+        <div class="container">
+            <h1>{{restaurant_name}}</h1>
+            <p><strong>Address:</strong> {{restaurant_address}}</p>
+            <p><strong>Phone Number:</strong> {{restaurant_number}}</p>
+            <p><strong>Description:</strong> {{restaurant_description}}</p>
+            <a href="/user" class="back-link">Back to User Page</a>
+        </div>
+    </div>
+</body>
+</html>
