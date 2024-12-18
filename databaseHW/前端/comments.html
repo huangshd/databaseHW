@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>评论页面</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+
+        /* 背景图片的容器 */
+        .flex-container {
+            display: flex;
+            justify-content: flex-start;  /* 水平对齐左侧 */
+            align-items: flex-start;      /* 垂直对齐顶部 */
+            flex-direction: column;
+            min-height: 100%;   /* 自适应高度 */
+            background-image: url('https://th.bing.com/th/id/OIP.2M_jrjaUYdMb06Xsm0ImcAHaEK?rs=1&pid=ImgDetMain');
+            background-size: cover;  /* 背景图片覆盖整个容器 */
+            background-position: center; /* 背景图片居中 */
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: white;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            text-align: left;  /* 确保内容左对齐 */
+        }
+        h1 {
+            color: #333;
+        }
+        .comments-list {
+            margin-top: 20px;
+            padding: 0;
+        }
+        .comment-item {
+            padding: 10px;
+            margin: 10px 0;
+            background-color: rgba(0, 0, 0, 0.6);
+            border-radius: 4px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            text-align: left;  /* 评论内容左对齐 */
+            background-color: white;
+        }
+        .comment-item p {
+            margin: 0;
+        }
+        .back-link {
+            display: block;
+            margin-top: 20px;
+            text-align: center;
+            color: #007bff;
+            text-decoration: none;
+        }
+        .back-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="flex-container">
+        <div class="container">
+            <h1>评论: {{dish_name}}</h1>
+            <div class="comments-list">
+                {{comments}}
+            </div>
+            <a href="/restaurant/{{restaurant_id}}" class="back-link">返回餐厅介绍</a>
+        </div>
+    </div>
+</body>
+</html>

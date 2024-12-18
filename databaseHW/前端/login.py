@@ -87,8 +87,10 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
                                 <h3>{dish.dish_name}</h3>
                                 <p><strong>价格：</strong> ${dish.price}</p>
                                 <p><strong>介绍：</strong> {dish.description}</p>
+                                <a href="/comments/{dish.dish_id}" class="comment-button">查看评论</a>    
                             </div>
                         '''
+                        # print(dish.dish_id)
 
                     html_content = html_content.replace("{{dishes}}", dishes_html)
 
@@ -101,6 +103,48 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
                     self.send_header("Content-type", "text/html")
                     self.end_headers()
                     self.wfile.write(b"Restaurant not found")
+
+
+
+        elif path.startswith("/comments/"):
+            dish_id = path.split('/')[-1]
+            print(dish_id)
+            if dish_id.isdigit():
+                print(f"Fetching comments for dish ID: {dish_id}")
+                # 获取评论数据
+                comments_data = self.get_comments_for_dish(dish_id)
+                if comments_data:
+                    # 渲染评论页面
+                    with open("comments.html", 'r', encoding='utf-8') as file:
+                        comments_template = file.read()
+                    # 使用数据填充评论模板
+                    dish_name = comments_data['dish_name']
+                    rest_id = comments_data['restaurant_id']
+                    comments_html = ""
+                    for comment in comments_data['comments']:
+                        comments_html += f'''
+                                        <div class="comment-item">
+                                            <p><strong>{comment['user_name']}:</strong> {comment['content']}</p>
+                                        </div>
+                                    '''
+                    comments_template = comments_template.replace("{{dish_name}}", dish_name)
+                    comments_template = comments_template.replace("{{comments}}", comments_html)
+                    comments_template = comments_template.replace("{{restaurant_id}}", str(rest_id))
+
+                    self.send_response(200)
+                    self.send_header("Content-type", "text/html")
+                    self.end_headers()
+                    self.wfile.write(comments_template.encode("utf-8"))
+                else:
+                    self.send_response(404)
+                    self.send_header("Content-type", "text/html")
+                    self.end_headers()
+                    self.wfile.write(b"Comments not found")
+            else:
+                self.send_response(400)
+                self.send_header("Content-type", "text/html")
+                self.end_headers()
+                self.wfile.write(b"Invalid dish ID")
 
     def do_POST(self):
         if self.path == "/login":
@@ -215,7 +259,7 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
         row = cursor.fetchone()
 
         # 获取菜品信息
-        cursor.execute(f"SELECT dish_name, price, description FROM Dishes WHERE rest_id = {restaurant_id}")
+        cursor.execute(f"SELECT dish_id, dish_name, price, description FROM Dishes WHERE rest_id = {restaurant_id}")
         dishes = cursor.fetchall()
         # print(dishes)
 
@@ -232,6 +276,51 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
                 'dishes': dishes  # 添加菜品信息
             }
         else:
+            return None
+
+    def get_comments_for_dish(self, dish_id):
+        # 连接到 SQL Server 数据库
+        conn = pyodbc.connect(
+            r'DRIVER={ODBC Driver 17 for SQL Server};'
+            r'SERVER=CHARLESHUANG\FUCKTHAT;'  # 使用您的 SQL Server 实例名称
+            r'DATABASE=Restaurants;'  # 使用数据库名称
+            r'UID=22336095;'  # 输入您的 SQL Server 用户名
+            r'PWD=4001234567'  # 输入您的 SQL Server 密码
+        )
+
+        cursor = conn.cursor()
+
+        # 获取菜品信息以及关联的餐厅 ID
+        cursor.execute(f"""
+            SELECT d.dish_name, r.restrant_id AS restaurant_id
+            FROM Dishes d
+            JOIN Restaurants r ON d.rest_id = r.restrant_id
+            WHERE d.dish_id = ?
+        """, dish_id)
+
+        dish_data = cursor.fetchone()
+
+        if dish_data:
+            # 获取评论数据
+            cursor.execute(f"""
+                SELECT u.user_name, c.content
+                FROM Comments c
+                JOIN Users u ON c.user_id = u.user_id
+                WHERE c.dish_id = ?
+            """, dish_id)
+
+            comments = cursor.fetchall()
+
+            conn.close()
+
+            # 返回数据，包括菜品名称、餐厅 ID 和评论
+            return {
+                'dish_name': dish_data.dish_name,
+                'restaurant_id': dish_data.restaurant_id,  # 添加餐厅 ID
+                'comments': [{'user_name': comment.user_name, 'content': comment.content} for comment in comments]
+            }
+        else:
+            conn.close()
             return None
 
 

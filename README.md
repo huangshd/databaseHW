@@ -1,3 +1,60 @@
+12/18 21:23更新
+实现了点击每个菜品的评论界面可以显示菜品的评论，主要实现在函数`get_comments_for_dish`中：
+```python
+cursor.execute(f"""
+            SELECT d.dish_name, r.restrant_id AS restaurant_id
+            FROM Dishes d
+            JOIN Restaurants r ON d.rest_id = r.restrant_id
+            WHERE d.dish_id = ?
+        """, dish_id)
+
+        dish_data = cursor.fetchone()
+
+        if dish_data:
+            # 获取评论数据
+            cursor.execute(f"""
+                SELECT u.user_name, c.content
+                FROM Comments c
+                JOIN Users u ON c.user_id = u.user_id
+                WHERE c.dish_id = ?
+            """, dish_id)
+```
+它读取了菜品名称，餐厅id(用于返回上一级)，用户名称以及他们发表的评论。它返回一个包含菜品名称，餐厅id和评论(已经包括了发表评论的人的名字)的字典：
+```python
+return {
+                'dish_name': dish_data.dish_name,
+                'restaurant_id': dish_data.restaurant_id,  # 添加餐厅 ID
+                'comments': [{'user_name': comment.user_name, 'content': comment.content} for comment in comments]
+            }
+```
+与前面一样，我们在`do_Get`函数中将数据填充进模板即可：
+```python
+dish_name = comments_data['dish_name']
+                    rest_id = comments_data['restaurant_id']
+                    comments_html = ""
+                    for comment in comments_data['comments']:
+                        comments_html += f'''
+                                        <div class="comment-item">
+                                            <p><strong>{comment['user_name']}:</strong> {comment['content']}</p>
+                                        </div>
+                                    '''
+                    comments_template = comments_template.replace("{{dish_name}}", dish_name)
+                    comments_template = comments_template.replace("{{comments}}", comments_html)
+                    comments_template = comments_template.replace("{{restaurant_id}}", str(rest_id))
+```
+模板的主体是一个框，框内展示了所有评论，在底部提供一个按钮返回到餐厅的详情列表中：
+```python
+<body>
+    <div class="container">
+        <h1>评论: {{dish_name}}</h1>
+        <div class="comments-list">
+            {{comments}}
+        </div>
+        <a href="/restaurant/{{restaurant_id}}" class="back-link">返回餐厅介绍</a>
+    </div>
+</body>
+```
+
 12/18 20:24更新  
 实现了介绍每个餐厅中的每个菜品的功能，主要实现的位置：
 在`login.py`中的`get_restaurant_details`中，我们读取数据库中的菜品的信息并且通过变量`dishes`加入到返回的字典中返回
