@@ -19,7 +19,8 @@
             display: flex;
             justify-content: center;  /* 水平居中 */
             align-items: center;      /* 垂直居中 */
-            height: 100vh;            /* 使容器占满整个视口 */
+            flex-direction:column;
+            min-height: 100%;
             background-image: url('{{background_image_url}}');
             background-size: cover;  /* 背景图片覆盖整个容器 */
             background-position: center; /* 背景图片居中 */
@@ -34,6 +35,7 @@
             text-align: center; /* 使文字居中 */
             max-width: 600px;  /* 最大宽度 */
             width: 100%;
+            margin-bottom:40px;
         }
 
         h1 {
@@ -59,16 +61,49 @@
         .back-link:hover {
             text-decoration: underline;
         }
+
+        /* 菜品列表样式 */
+        .dishes {
+            width: 100%;
+            display: flex;
+            flex-direction: column;  /* 垂直排列菜品 */
+            gap: 20px;  /* 每个菜品之间的间距 */
+            padding: 20px;
+            max-width: 600px;  /* 限制宽度 */
+            margin: 0 auto;  /* 居中对齐 */
+        }
+
+        .dish-item {
+            background-color: rgba(0, 0, 0, 0.6); /* 半透明白色背景 */
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .dish-item h3 {
+            margin: 0;
+            font-size: 1.5em;
+            font-weight: bold;
+        }
+
+        .dish-item p {
+            margin: 10px 0;
+            font-size: 1.1em;
+        }
     </style>
 </head>
 <body>
     <div class="flex-container">
         <div class="container">
             <h1>{{restaurant_name}}</h1>
-            <p><strong>Address:</strong> {{restaurant_address}}</p>
-            <p><strong>Phone Number:</strong> {{restaurant_number}}</p>
-            <p><strong>Description:</strong> {{restaurant_description}}</p>
+            <p><strong>地址：</strong> {{restaurant_address}}</p>
+            <p><strong>预订电话：</strong> {{restaurant_number}}</p>
+            <p><strong>简介：</strong> {{restaurant_description}}</p>
             <a href="/user" class="back-link">Back to User Page</a>
+        </div>
+
+        <div class="dishes">
+            {{dishes}}
         </div>
     </div>
 </body>

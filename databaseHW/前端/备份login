@@ -63,6 +63,7 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
 
                 # 获取餐厅的详细数据
                 restaurant_data = self.get_restaurant_details(restaurant_id)
+                # print(restaurant_data)
 
                 if restaurant_data:
                     # 读取模板文件
@@ -77,6 +78,19 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
                                                         restaurant_data['restaurant_description'])
                     html_content = html_content.replace("{{background_image_url}}",
                                                         restaurant_data['background_image_url'])
+
+                    # 渲染菜品信息
+                    dishes_html = ""
+                    for dish in restaurant_data['dishes']:
+                        dishes_html += f'''
+                            <div class="dish-item">
+                                <h3>{dish.dish_name}</h3>
+                                <p><strong>价格：</strong> ${dish.price}</p>
+                                <p><strong>介绍：</strong> {dish.description}</p>
+                            </div>
+                        '''
+
+                    html_content = html_content.replace("{{dishes}}", dishes_html)
 
                     self.send_response(200)
                     self.send_header("Content-type", "text/html")
@@ -150,10 +164,16 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
 
         cursor = conn.cursor()
 
-        # 查询餐厅名称
-        cursor.execute("SELECT restrant_id, name FROM Restaurants")
+        # 查询餐厅名称和平均评分
+        cursor.execute("""
+            SELECT r.restrant_id, r.name, r.background_image_url,
+                   AVG(c.rating) AS avg_rating
+            FROM Restaurants r
+            LEFT JOIN Comments c ON r.restrant_id = c.rest_id
+            GROUP BY r.restrant_id, r.name, r.background_image_url
+        """)
 
-        # 生成餐厅名称的 HTML
+        # 生成餐厅名称和评分的 HTML
         html = ""
         image_index = 0  # 用来循环访问背景图片元组
 
@@ -161,9 +181,13 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
             # 获取背景图片 URL（循环使用背景图片元组中的图片）
             background_image_url = self.background_images[image_index]
 
+            # 获取餐厅的平均评分
+            avg_rating = row.avg_rating if row.avg_rating is not None else 0
+
             html += f'''
             <div class="restaurant-item" style="background-image: url('{background_image_url}')">
                 <h3>{row.name}</h3>
+                <p>评分： {avg_rating:.1f}</p>
                 <a href="/restaurant/{row.restrant_id}">View Details</a>
             </div>
             '''
@@ -173,25 +197,6 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
 
         conn.close()
         return html
-
-    def render_restaurant_details(self, details):
-        # 使用字符串格式化将餐厅详情数据渲染到 HTML 模板中
-        return f'''
-        <html>
-        <head><title>{details['restaurant_name']} Details</title></head>
-        <body>
-            <div class="flex-container" style="background-image: url('{details['background_image_url']}');">
-                <div class="container">
-                    <h1>{details['restaurant_name']}</h1>
-                    <p><strong>Address:</strong> {details['restaurant_address']}</p>
-                    <p><strong>Phone Number:</strong> {details['restaurant_number']}</p>
-                    <p><strong>Description:</strong> {details['restaurant_description']}</p>
-                    <a href="/user" class="back-link">Back to User Page</a>
-                </div>
-            </div>
-        </body>
-        </html>
-        '''
 
     def get_restaurant_details(self, restaurant_id):
         # 连接数据库并获取餐厅详细信息
@@ -208,16 +213,23 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
         )
 
         row = cursor.fetchone()
+
+        # 获取菜品信息
+        cursor.execute(f"SELECT dish_name, price, description FROM Dishes WHERE rest_id = {restaurant_id}")
+        dishes = cursor.fetchall()
+        # print(dishes)
+
         conn.close()
 
         if row:
-            # 将数据作为字典返回
+            # 将餐厅信息和菜品信息一起返回
             return {
                 'restaurant_name': row.name,
                 'restaurant_address': row.address,
                 'restaurant_number': row.number,
                 'restaurant_description': row.description,
-                'background_image_url': row.background_image_url
+                'background_image_url': row.background_image_url,
+                'dishes': dishes  # 添加菜品信息
             }
         else:
             return None

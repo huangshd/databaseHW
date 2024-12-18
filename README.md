@@ -1,3 +1,45 @@
+12/18 20:24更新  
+实现了介绍每个餐厅中的每个菜品的功能，主要实现的位置：
+在`login.py`中的`get_restaurant_details`中，我们读取数据库中的菜品的信息并且通过变量`dishes`加入到返回的字典中返回
+```python
+# 获取菜品信息
+        cursor.execute(f"SELECT dish_name, price, description FROM Dishes WHERE rest_id = {restaurant_id}")
+        dishes = cursor.fetchall()
+```
+在`do_GET`函数中，我们渲染了对应的显示菜品的块,然后将它取代掉我们先前定义在`restaurant_detail.html`文件中的占位符
+```python
+dishes_html = ""
+                    for dish in restaurant_data['dishes']:
+                        dishes_html += f'''
+                            <div class="dish-item">
+                                <h3>{dish.dish_name}</h3>
+                                <p><strong>价格：</strong> ${dish.price}</p>
+                                <p><strong>介绍：</strong> {dish.description}</p>
+                            </div>
+                        '''
+
+                    html_content = html_content.replace("{{dishes}}", dishes_html)
+```
+在`restaurant_detail.html`中，我们开多了一个块以供菜品使用
+```python
+<div class="dishes">
+            {{dishes}}
+        </div>
+```
+同时，我们调整了页面的大小，使其自动适应整个页面的块的数量，避免有信息被挤出页面丢失
+```python
+.flex-container {
+            display: flex;
+            justify-content: center;  /* 水平居中 */
+            align-items: center;      /* 垂直居中 */
+            flex-direction:column;
+            min-height: 100%;   /* 自适应高度 */
+            background-image: url('{{background_image_url}}');
+            background-size: cover;  /* 背景图片覆盖整个容器 */
+            background-position: center; /* 背景图片居中 */
+        }
+```
+
 12/18 18:52更新  
 实现了将评分显示到餐厅界面中的功能，主要的实现逻辑是在`get_restaurant_names`函数的
 ````python
