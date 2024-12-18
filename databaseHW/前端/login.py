@@ -5,8 +5,8 @@ from urllib.parse import urlparse, parse_qs
 import pyodbc
 
 
-DEFAULT_USERNAME = "22336095"
-DEFAULT_PASSWORD = "1"
+# DEFAULT_USERNAME = "22336095"
+# DEFAULT_PASSWORD = "1"
 
 class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
     # 初始化背景图片元组
@@ -155,7 +155,8 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
             username = credentials.get("username")
             password = credentials.get("password")
 
-            if username == DEFAULT_USERNAME and password == DEFAULT_PASSWORD:
+            # 使用数据库连接进行验证
+            if self.validate_user_credentials(username, password):
                 response = {"success": True}
             else:
                 response = {"success": False}
@@ -167,6 +168,31 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
         else:
             self.send_response(404)
             self.end_headers()
+
+    def validate_user_credentials(self, username, password):
+        # 连接到 SQL Server 数据库
+        conn = pyodbc.connect(
+            r'DRIVER={ODBC Driver 17 for SQL Server};'
+            r'SERVER=CHARLESHUANG\FUCKTHAT;'  # 使用您的 SQL Server 实例名称
+            r'DATABASE=Restaurants;'  # 使用数据库名称
+            r'UID=22336095;'  # 输入您的 SQL Server 用户名
+            r'PWD=4001234567'  # 输入您的 SQL Server 密码
+        )
+
+        cursor = conn.cursor()
+
+        # 查询用户表，验证用户名和密码
+        cursor.execute("""
+            SELECT * FROM Users WHERE user_name = ? AND pass_word = ?
+        """, username, password)
+        user = cursor.fetchone()
+        conn.close()
+        if user:
+            # 如果找到了匹配的用户，返回 True
+            return True
+        else:
+            # 如果没有找到匹配的用户，返回 False
+            return False
 
     def generate_table_html(self, table_name):
         conn = pg8000.connect(

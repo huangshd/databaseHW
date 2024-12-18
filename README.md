@@ -1,3 +1,20 @@
+12/18 21:52更新
+实现了连接数据库(我使用的是`sql server`，实际应用还要修改方法)来判断用户是否能成功登陆。是通过`do_POST`类实现的,而`do_Post`函数的核心功能则是依赖于函数`validate_user_credentials`:
+```python
+cursor.execute("""
+            SELECT * FROM Users WHERE user_name = ? AND pass_word = ?
+        """, username, password)
+        user = cursor.fetchone()
+        conn.close()
+        if user:
+            # 如果找到了匹配的用户，返回 True
+            return True
+        else:
+            # 如果没有找到匹配的用户，返回 False
+            return False
+```
+它接受从`do_Post`中传进来的`username`和`password`，在数据库`User`表中进行匹配，如果匹配成功则返回`True`，它会在`do_Post`函数中实现跳转到用户选择页面中，反之则会产生登录失败的弹窗
+
 12/18 21:23更新
 实现了点击每个菜品的评论界面可以显示菜品的评论，主要实现在函数`get_comments_for_dish`中：
 ```python
