@@ -2,9 +2,38 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>User Page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .welcome-message {
+            margin-top: 20px;
+            font-size: 24px;
+            font-weight: bold;
+            text-align: center;
+        }
+    </style>
 </head>
 <body>
+    <div class="welcome-message" id="welcomeMessage">欢迎，用户！</div>
     <h1>Welcome to the User Page</h1>
+
+    <script>
+        // 获取 URL 参数中的用户名
+        const params = new URLSearchParams(window.location.search);
+        const username = params.get('username');
+
+        // 动态设置欢迎消息
+        if (username) {
+            document.getElementById('welcomeMessage').textContent = `欢迎，${username}！`;
+        }
+    </script>
 </body>
 </html>

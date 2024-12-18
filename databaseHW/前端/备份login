@@ -1,35 +1,36 @@
 from http.server import BaseHTTPRequestHandler, HTTPServer
 import json
 import pg8000
-from urllib.parse import urlparse, parse_qs
 
 DEFAULT_USERNAME = "22336095"
 DEFAULT_PASSWORD = "1"
 
 class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
     def do_GET(self):
-        # 解析路径并去除查询参数
-        parsed_path = urlparse(self.path)
-        path = parsed_path.path
-
-        if path == "/":
+        if self.path == "/":
             self.send_response(200)
             self.send_header("Content-type", "text/html")
             self.end_headers()
             with open("index.html", "rb") as file:
                 self.wfile.write(file.read())
-        elif path == "/user":
+        elif self.path == "/user":
             self.send_response(200)
             self.send_header("Content-type", "text/html")
             self.end_headers()
             with open("user.html", "rb") as file:
                 self.wfile.write(file.read())
-        elif path == "/admin":
+        elif self.path == "/admin":
             self.send_response(200)
             self.send_header("Content-type", "text/html")
             self.end_headers()
             with open("admin.html", "rb") as file:
                 self.wfile.write(file.read())
+        elif self.path in ["/user-table", "/merchant-table", "/dish-table", "/review-table", "/order-table"]:
+            self.send_response(200)
+            self.send_header("Content-type", "text/html")
+            self.end_headers()
+            table_name = self.path[1:].replace("-table", "")
+            self.wfile.write(self.generate_table_html(table_name).encode("utf-8"))
         else:
             self.send_response(404)
             self.end_headers()
