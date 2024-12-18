@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Page</title>
+    <style>
+        /* 设置 body 的样式 */
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background-image: url('add.jpg');
+            background-size: cover;
+            background-position: center;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        /* 设置添加容器的样式 */
+        .add-container {
+            background: rgba(255, 255, 255, 0.8);
+            padding: 20px 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            width: 400px;
+            text-align: center;
+        }
+        /* 设置添加容器内标题的样式 */
+        .add-container h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        /* 设置标签的样式 */
+        .add-container label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        /* 设置选择框和输入框的样式 */
+        .add-container select,
+        .add-container input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        /* 设置按钮的样式 */
+        .add-container button {
+            width: 100%;
+            padding: 10px;
+            background-color: #5cb85c;
+            border: none;
+            border-radius: 5px;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            margin-bottom: 10px;
+        }
+        /* 设置按钮悬停时的样式 */
+        .add-container button:hover {
+            background-color: #4cae4c;
+        }
+    </style>
+</head>
+<body>
+    <div class="add-container">
+        <h1>Add Page</h1>
+        <p>这里是添加页面的内容。</p>
+        <form action="/add-table" method="post">
+            <label for="table-select">选择要添加的表:</label>
+            <select id="table-select" name="table" onchange="showFields()">
+                <option value="user">用户表</option>
+                <option value="merchant">商家表</option>
+                <option value="dish">菜品表</option>
+                <option value="review">评价表</option>
+                <option value="order">订单表</option>
+            </select>
+            <div id="fields-container"></div>
+            <button type="submit">添加</button>
+        </form>
+    </div>
+
+    <script>
+        function showFields() {
+            const table = document.getElementById('table-select').value;
+            const fieldsContainer = document.getElementById('fields-container');
+            if (table === 'user') {
+                fieldsContainer.innerHTML = `
+                    <label for="email">邮箱:</label>
+                    <input type="text" id="email" name="email"><br>
+                    <label for="role">角色:</label>
+                    <input type="text" id="role" name="role"><br>
+                    <label for="phone_number">电话号码:</label>
+                    <input type="text" id="phone_number" name="phone_number"><br>
+                `;
+            } else if (table === 'merchant') {
+                fieldsContainer.innerHTML = `
+                    <label for="rest_id">商家ID:</label>
+                    <input type="text" id="rest_id" name="rest_id"><br>
+                    <label for="rest_name">商家名称:</label>
+                    <input type="text" id="rest_name" name="rest_name"><br>
+                    <label for="address">地址:</label>
+                    <input type="text" id="address" name="address"><br>
+                    <label for="phone_number">电话号码:</label>
+                    <input type="text" id="phone_number" name="phone_number"><br>
+                    <label for="description">描述:</label>
+                    <input type="text" id="description" name="description"><br>
+                `;
+            } else if (table === 'dish') {
+                fieldsContainer.innerHTML = `
+                    <label for="dish_id">菜品ID:</label>
+                    <input type="text" id="dish_id" name="dish_id"><br>
+                    <label for="rest_id">商家ID:</label>
+                    <input type="text" id="rest_id" name="rest_id"><br>
+                    <label for="dish_name">菜品名称:</label>
+                    <input type="text" id="dish_name" name="dish_name"><br>
+                    <label for="price">价格:</label>
+                    <input type="text" id="price" name="price"><br>
+                    <label for="description">描述:</label>
+                    <input type="text" id="description" name="description"><br>
+                `;
+            } else if (table === 'review') {
+                fieldsContainer.innerHTML = `
+                    <label for="comment_id">评论ID:</label>
+                    <input type="text" id="comment_id" name="comment_id"><br>
+                    <label for="user_id">用户ID:</label>
+                    <input type="text" id="user_id" name="user_id"><br>
+                    <label for="rest_id">商家ID:</label>
+                    <input type="text" id="rest_id" name="rest_id"><br>
+                    <label for="dish_id">菜品ID:</label>
+                    <input type="text" id="dish_id" name="dish_id"><br>
+                    <label for="content">内容:</label>
+                    <input type="text" id="content" name="content"><br>
+                    <label for="rating">评分:</label>
+                    <input type="text" id="rating" name="rating"><br>
+                `;
+            } else if (table === 'order') {
+                fieldsContainer.innerHTML = `
+                    <label for="order_id">订单ID:</label>
+                    <input type="text" id="order_id" name="order_id"><br>
+                    <label for="user_id">用户ID:</label>
+                    <input type="text" id="user_id" name="user_id"><br>
+                    <label for="rest_id">商家ID:</label>
+                    <input type="text" id="rest_id" name="rest_id"><br>
+                    <label for="total_price">总价:</label>
+                    <input type="text" id="total_price" name="total_price"><br>
+                    <label for="order_status">订单状态:</label>
+                    <input type="text" id="order_status" name="order_status"><br>
+                `;
+            }
+        }
+    </script>
+</body>
+</html>

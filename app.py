@@ -11,6 +11,10 @@ jwt = JWTManager(app)  # 初始化JWT扩展
 def index():
     return render_template('index.html')  # 渲染位于 templates/index.html 的页面
 
+"""
+DEFAULT_USERNAME = '1'
+DEFAULT_PASSWORD = '1'
+"""
 # 登录页面的路由
 @app.route('/login', methods=['POST'])
 def login():
@@ -20,6 +24,17 @@ def login():
     password = data.get('password')  # 从请求中获取密码
 
     print(f"用户尝试登录: {user_name}")
+
+    """
+    # 检查是否为默认账号密码
+    if user_name == DEFAULT_USERNAME and password == DEFAULT_PASSWORD:
+        session['user_id'] = 'default_admin_id'  # 使用一个默认的 user_id
+        session['user_name'] = user_name  # 将 user_name 存入会话
+        flash("默认管理员登录成功！", "success")
+        print(f"默认管理员 '{user_name}' 登录成功")
+        return jsonify(success=True, message="默认管理员登录成功！",
+                       token=create_access_token(identity=user_name))  # 返回成功信息和 JWT
+    """
 
     # 连接数据库并验证用户
     with db.connect_to_database() as connection:
@@ -40,6 +55,11 @@ def login():
 def admin():
     """返回管理员页面"""
     return render_template('admin.html')
+
+@app.route('/add.html')
+def add_page():
+    return render_template('add.html')
+
 
 def generate_table(headers, rows):
     """
@@ -123,6 +143,66 @@ def order_table():
 
     return generate_table(headers, rows)
 
+@app.route('/add-table', methods=['POST'])
+def add_table():
+    table = request.form['table']
+    with db.connect_to_database() as connection:
+        cursor = connection.cursor()
+        if table == 'user':
+            user_id = request.form['user_id']
+            user_name = request.form['user_name']
+            password = request.form['password']
+            email = request.form['email']
+            role = request.form['role']
+            phone_number = request.form['phone_number']
+            cursor.execute("""
+                INSERT INTO users (user_id, user_name, pass_word, email, role, phone_number)
+                VALUES (%s, %s, %s, %s, %s, %s)
+            """, (user_id, user_name, password, email, role, phone_number))
+        elif table == 'merchant':
+            rest_id = request.form['rest_id']
+            rest_name = request.form['rest_name']
+            address = request.form['address']
+            phone_number = request.form['phone_number']
+            description = request.form['description']
+            cursor.execute("""
+                INSERT INTO restaurants (rest_id, rest_name, address, phone_number, description)
+                VALUES (%s, %s, %s, %s, %s)
+            """, (rest_id, rest_name, address, phone_number, description))
+        elif table == 'dish':
+            dish_id = request.form['dish_id']
+            rest_id = request.form['rest_id']
+            dish_name = request.form['dish_name']
+            price = request.form['price']
+            description = request.form['description']
+            cursor.execute("""
+                INSERT INTO dishes (dish_id, rest_id, dish_name, price, description)
+                VALUES (%s, %s, %s, %s, %s)
+            """, (dish_id, rest_id, dish_name, price, description))
+        elif table == 'review':
+            comment_id = request.form['comment_id']
+            user_id = request.form['user_id']
+            rest_id = request.form['rest_id']
+            dish_id = request.form['dish_id']
+            content = request.form['content']
+            rating = request.form['rating']
+            cursor.execute("""
+                INSERT INTO comments (comment_id, user_id, rest_id, dish_id, content, rating)
+                VALUES (%s, %s, %s, %s, %s, %s)
+            """, (comment_id, user_id, rest_id, dish_id, content, rating))
+        elif table == 'order':
+            order_id = request.form['order_id']
+            user_id = request.form['user_id']
+            rest_id = request.form['rest_id']
+            total_price = request.form['total_price']
+            order_status = request.form['order_status']
+            cursor.execute("""
+                INSERT INTO orders (order_id, user_id, rest_id, total_price, order_status)
+                VALUES (%s, %s, %s, %s, %s)
+            """, (order_id, user_id, rest_id, total_price, order_status))
+        connection.commit()
+        cursor.close()
+    return redirect('/add.html')
 
 if __name__ == '__main__':
     # 让 Flask 监听 8000 端口
