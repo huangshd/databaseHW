@@ -2,28 +2,39 @@ from http.server import BaseHTTPRequestHandler, HTTPServer
 import json
 import pg8000
 from urllib.parse import urlparse, parse_qs
+import pyodbc
 
 DEFAULT_USERNAME = "22336095"
 DEFAULT_PASSWORD = "1"
 
 class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
     def do_GET(self):
-        # 解析路径并去除查询参数
         parsed_path = urlparse(self.path)
         path = parsed_path.path
 
-        if path == "/":
+        if self.path == "/":
             self.send_response(200)
             self.send_header("Content-type", "text/html")
             self.end_headers()
-            with open("index.html", "rb") as file:
+            with open("index.html", "rb") as file:  # 确保 index.html 存在
                 self.wfile.write(file.read())
+
         elif path == "/user":
             self.send_response(200)
             self.send_header("Content-type", "text/html")
             self.end_headers()
-            with open("user.html", "rb") as file:
-                self.wfile.write(file.read())
+
+            # 获取餐厅名称
+            restaurant_names_html = self.get_restaurant_names()
+
+            # 渲染 user.html 页面并在适当位置插入餐厅名称
+            with open("user.html", 'r', encoding='utf-8') as file:
+                html_content = file.read()
+
+            # 将餐厅名称插入到页面中
+            html_content = html_content.replace("{{restaurant_names}}", restaurant_names_html)
+
+            self.wfile.write(html_content.encode("utf-8"))
         elif path == "/admin":
             self.send_response(200)
             self.send_header("Content-type", "text/html")
@@ -33,6 +44,30 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
         else:
             self.send_response(404)
             self.end_headers()
+
+    def get_restaurant_names(self):
+        # 连接到 SQL Server 数据库
+        conn = pyodbc.connect(
+            r'DRIVER={ODBC Driver 17 for SQL Server};'
+            r'SERVER=CHARLESHUANG\FUCKTHAT;'  # 使用您的 SQL Server 实例名称
+            r'DATABASE=Restaurants;'  # 使用数据库名称
+            r'UID=22336095;'  # 输入您的 SQL Server 用户名
+            r'PWD=4001234567'  # 输入您的 SQL Server 密码
+        )
+
+        cursor = conn.cursor()
+
+        # 查询餐厅名称
+        cursor.execute("SELECT name FROM restaurant")
+
+        # 生成餐厅名称的 HTML
+        html = "<ul>"
+        for row in cursor.fetchall():
+            html += f"<li>{row.name}</li>"  # row.name 是餐厅名称
+        html += "</ul>"
+
+        conn.close()
+        return html
 
     def do_POST(self):
         if self.path == "/login":

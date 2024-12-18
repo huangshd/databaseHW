@@ -19,30 +19,18 @@
             font-weight: bold;
             text-align: center;
         }
-        .restaurant-list {
-            margin-top: 20px;
-            font-size: 20px;
-            list-style-type: none;
-            padding: 0;
-        }
-        .restaurant-list li {
-            margin: 10px 0;
-        }
     </style>
 </head>
 <body>
     <div class="welcome-message" id="welcomeMessage">欢迎，用户！</div>
     <h1>Welcome to the User Page</h1>
 
-    <h2>餐厅列表</h2>
-    <div class="restaurant-list">
-        <!-- 餐厅名称将在这里动态插入 -->
-        {{restaurant_names}}
-    </div>
-
     <script>
+        // 获取 URL 参数中的用户名
         const params = new URLSearchParams(window.location.search);
         const username = params.get('username');
+
+        // 动态设置欢迎消息
         if (username) {
             document.getElementById('welcomeMessage').textContent = `欢迎，${username}！`;
         }
