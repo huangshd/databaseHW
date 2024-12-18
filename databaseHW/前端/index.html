@@ -97,30 +97,37 @@
     </div>
 
     <script>
-    document.getElementById('loginForm').addEventListener('submit', async function(event) {
-        event.preventDefault();
+        // 添加表单提交事件监听器
+        document.getElementById('loginForm').addEventListener('submit', async function(event) {
+            event.preventDefault();
 
-        const username = document.getElementById('username').value;
-        const password = document.getElementById('password').value;
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            // 发送登录请求
+            const response = await fetch('/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ username, password })
+            });
 
-        // 发送登录请求
-        const response = await fetch('/login', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ username, password })
+            const result = await response.json();
+            // 根据响应结果显示提示信息
+            if (result.success) {
+                document.body.innerHTML = `
+                    <div class="login-container">
+                        <h1>登录成功！</h1>
+                        <div class="success-buttons">
+                            <button onclick="location.href='/user'">我是用户</button>
+                            <button onclick="location.href='/admin'">我是管理员</button>
+                        </div>
+                    </div>
+                `;
+            } else {
+                alert('账号或密码错误！');
+            }
         });
-
-        const result = await response.json();
-
-        if (result.success) {
-            // 登录成功后跳转到 user 页面并传递用户名
-            location.href = `/user?username=${encodeURIComponent(username)}`;
-        } else {
-            alert('账号或密码错误！');
-        }
-    });
-</script>
+    </script>
 </body>
 </html>

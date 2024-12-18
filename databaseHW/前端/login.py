@@ -1,6 +1,6 @@
 from http.server import BaseHTTPRequestHandler, HTTPServer
 import json
-import pg8000.native
+import pg8000
 
 DEFAULT_USERNAME = "22336095"
 DEFAULT_PASSWORD = "1"
@@ -58,32 +58,31 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
             self.end_headers()
 
     def generate_table_html(self, table_name):
-        conn = pg8000.native.Connection(
+        conn = pg8000.connect(
+            database="postgres",
             user="admin",
             password="admin@123",
-            database="postgres",
             host="192.168.27.129",
             port=7654
         )
-        cursor = conn.run(f"SELECT * FROM {table_name}")
-        columns = [desc[0] for desc in conn.run(f"SELECT column_name FROM information_schema.columns WHERE table_name = '{table_name}'")]
+        cursor = conn.cursor()
+        cursor.execute(f"SELECT * FROM {table_name}")
+        rows = cursor.fetchall()
+        columns = [desc[0] for desc in cursor.description]
+        conn.close()
 
-        html = f"<table><tr>"
-
-        # Add table headers
+        html = "<table><tr>"
         for column in columns:
             html += f"<th>{column}</th>"
         html += "</tr>"
 
-        # Add table rows
-        for row in cursor:
+        for row in rows:
             html += "<tr>"
             for cell in row:
                 html += f"<td>{cell}</td>"
             html += "</tr>"
 
         html += "</table>"
-        conn.close()
         return html
 
 if __name__ == "__main__":
