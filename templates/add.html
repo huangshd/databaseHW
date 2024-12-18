@@ -71,6 +71,7 @@
         <form action="/add-table" method="post">
             <label for="table-select">选择要添加的表:</label>
             <select id="table-select" name="table" onchange="showFields()">
+                <option value="" disabled selected>选择要添加的表</option>
                 <option value="user">用户表</option>
                 <option value="merchant">商家表</option>
                 <option value="dish">菜品表</option>
@@ -88,6 +89,12 @@
             const fieldsContainer = document.getElementById('fields-container');
             if (table === 'user') {
                 fieldsContainer.innerHTML = `
+                    <label for="user_id">用户ID:</label>
+                    <input type="text" id="user_id" name="user_id"><br>
+                    <label for="user_name">用户名:</label>
+                    <input type="text" id="user_name" name="user_name"><br>
+                    <label for="password">密码:</label>
+                    <input type="text" id="password" name="password"><br>
                     <label for="email">邮箱:</label>
                     <input type="text" id="email" name="email"><br>
                     <label for="role">角色:</label>
@@ -149,6 +156,8 @@
                     <label for="order_status">订单状态:</label>
                     <input type="text" id="order_status" name="order_status"><br>
                 `;
+            } else {
+                fieldsContainer.innerHTML = '';
             }
         }
     </script>
